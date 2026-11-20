@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Secure Access Portal</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eaf0f8,#d8e5f5);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.card{width:100%;max-width:460px;background:#fff;border-radius:20px;padding:35px;box-shadow:0 15px 45px rgba(15,35,65,.15)}
+.brand{text-align:center;color:#b89a52;font-size:13px;letter-spacing:3px;font-weight:bold;margin-bottom:15px}
+.logo{width:65px;height:65px;margin:auto;background:#142b45;color:#e4c578;display:flex;align-items:center;justify-content:center;border-radius:18px;font-size:28px}
+h1{text-align:center;color:#142b45;margin:18px 0 8px}
+.subtitle{text-align:center;color:#718096;font-size:14px;margin-bottom:28px}
+label{font-weight:bold;color:#24364d;font-size:14px}
+.phone-box{display:flex;align-items:center;border:1px solid #cbd5e1;border-radius:10px;margin-top:9px;padding:0 12px;height:55px}
+.country{color:#334155;font-weight:bold;border-right:1px solid #d1d5db;padding-right:12px}
+input[type=tel]{flex:1;border:none;outline:none;padding:12px;font-size:16px;min-width:0}
+.status{font-size:24px;font-weight:bold}
+.message{display:none;margin-top:10px;padding:12px;border-radius:8px;font-size:14px}
+.success{color:#16803a;background:#e9f8ed}
+.error{color:#c62828;background:#fff0f0}
+.captcha{margin-top:22px;padding:17px;border:1px solid #d5dce5;border-radius:12px;background:#f7f9fc;opacity:.5;transition:.3s}
+.captcha.unlocked{opacity:1;border-color:#83c995;background:#f0fff4}
+.captcha-title{color:#203650;font-weight:bold;margin-bottom:8px}
+.captcha-text{font-size:13px;color:#718096;margin-bottom:14px}
+.robot{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d1d5db;border-radius:7px;padding:12px}
+.robot input{width:20px;height:20px}
+button{width:100%;margin-top:20px;padding:15px;border:none;border-radius:10px;background:#142b45;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;transition:.2s}
+button:hover:not(:disabled){background:#254a70;transform:translateY(-1px)}
+button:disabled{background:#a7b6c8;cursor:not-allowed}
+.footer{text-align:center;font-size:12px;color:#718096;margin-top:20px;border-top:1px solid #e5eaf0;padding-top:15px}
+#thankYou{display:none;text-align:center}
+#thankYou h1{color:#142b45}
+#thankYou p{color:#718096}
+#thankYou img{width:100%;height:auto;border-radius:14px;margin-top:15px}
+@media(max-width:480px){.card{padding:25px 20px}}
+</style>
+</head>
+<body>
+<div class="card">
+<div id="loginPage">
+<div class="brand">SECURE ACCESS PORTAL</div>
+<div class="logo">🔒</div>
+<h1>Welcome Back</h1>
+<p class="subtitle">Verify your registered mobile number</p>
+<label for="phone">Mobile Number</label>
+<div class="phone-box">
+<span class="country">🇮🇳 +91</span>
+<input type="tel" id="phone" maxlength="10" placeholder="Enter mobile number" inputmode="numeric" autocomplete="tel">
+<span id="status" class="status"></span>
+</div>
+<div id="message" class="message"></div>
+<div id="captcha" class="captcha">
+<div class="captcha-title">🔐 CAPTCHA Verification</div>
+<div id="captchaText" class="captcha-text">Enter a registered number to unlock verification.</div>
+<label class="robot"><input type="checkbox" id="robot" disabled>I'm not a robot</label>
+</div>
+<button id="continueBtn" disabled>Continue →</button>
+<div class="footer">🔒 Secure Verification Portal</div>
+</div>
+<div id="thankYou">
+<h1>Thank You!</h1>
+<p>Thank you for visiting our portal.</p>
+<img id="thankImage" alt="Thank You Image">
+<div class="footer">Secure Access Portal</div>
+<button id="backBtn">Back to Login</button>
+</div>
+</div>
+<script>
+const registeredNumbers=["9876543210","9123456789"],
+phone=document.getElementById("phone"),
+status=document.getElementById("status"),
+message=document.getElementById("message"),
+captcha=document.getElementById("captcha"),
+captchaText=document.getElementById("captchaText"),
+robot=document.getElementById("robot"),
+continueBtn=document.getElementById("continueBtn");
+phone.addEventListener("input",function(){
+let number=phone.value.trim();
+status.textContent="";
+message.style.display="none";
+captcha.classList.remove("unlocked");
+robot.checked=false;
+robot.disabled=true;
+continueBtn.disabled=true;
+if(number.length!==10||!/^\d{10}$/.test(number))return;
+if(registeredNumbers.includes(number)){
+status.textContent="✓";
+status.style.color="#16a34a";
+message.textContent="Number is registered.";
+message.className="message success";
+message.style.display="block";
+captcha.classList.add("unlocked");
+captchaText.textContent="Number verified. Complete the CAPTCHA.";
+robot.disabled=false
+}else{
+status.textContent="✕";
+status.style.color="#dc2626";
+message.textContent="Number is not registered.";
+message.className="message error";
+message.style.display="block";
+captchaText.textContent="CAPTCHA is locked. Number not registered."
+}
+});
+robot.addEventListener("change",function(){
+continueBtn.disabled=!robot.checked
+});
+continueBtn.addEventListener("click",function(){
+if(continueBtn.disabled)return;
+document.getElementById("loginPage").style.display="none";
+document.getElementById("thankYou").style.display="block";
+document.getElementById("thankImage").src="thankyou.jpg"
+});
+document.getElementById("backBtn").addEventListener("click",function(){
+document.getElementById("thankYou").style.display="none";
+document.getElementById("loginPage").style.display="block";
+phone.value="";
+status.textContent="";
+message.style.display="none";
+robot.checked=false;
+robot.disabled=true;
+captcha.classList.remove("unlocked");
+captchaText.textContent="Enter a registered number to unlock verification.";
+continueBtn.disabled=true
+});
+</script>
+</body>
+</html>
